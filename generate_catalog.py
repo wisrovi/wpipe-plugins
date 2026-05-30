@@ -26,8 +26,14 @@ def scan_repo(repo_path, prefix="Official"):
                             func_match = re.search(r'(?:def|class)\s+(\w+)', after_decorator)
                             func_name = func_match.group(1) if func_match else ""
                             
+                            # Real import namespace
                             rel_to_base = os.path.relpath(root, base_dir)
                             namespace = rel_to_base.replace(os.sep, ".")
+                            
+                            # If it is not in __init__.py, append filename to namespace for direct import
+                            if file != "__init__.py":
+                                module_name = file[:-3]
+                                namespace = f"{namespace}.{module_name}"
                             
                             catalog.append({
                                 "name": name,
@@ -40,7 +46,6 @@ def scan_repo(repo_path, prefix="Official"):
     return catalog
 
 if __name__ == "__main__":
-    # Detect which repo we are in
     if os.path.exists("wpipe_steps"):
         cat = scan_repo("wpipe_steps", "Official")
     elif os.path.exists("module"):
