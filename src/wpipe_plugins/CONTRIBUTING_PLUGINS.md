@@ -83,7 +83,8 @@ To make your state visible to the community, you must add an entry to `steps_cat
   "repo": "Community",
   "author": "Your Name",
   "examples": "path/to/examples/folder/",
-  "requirements": "pip install library-x; Requires Redis v6+ server",
+  "environment": "Software/Hardware requirements (e.g., Requires Redis server, GPU recommended)",
+  "requirements": "path/to/plugin/requirements.txt",
   "how_to_use": "from wpipe_plugins.category.name import ClassNameStep"
 }
 ```
