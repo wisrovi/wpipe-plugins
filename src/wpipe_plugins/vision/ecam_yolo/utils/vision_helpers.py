@@ -1,6 +1,6 @@
 """Helper functions for image processing, drawing, and Grad-CAM blending."""
 
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import cv2
 import numpy as np
@@ -13,8 +13,8 @@ COLORS: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(np.uint8)
 
 
 def parse_detections(
-    results: List[Results],
-) -> Tuple[List[np.ndarray], List[List[int]], List[str]]:
+    results: list[Results],
+) -> tuple[list[np.ndarray], list[list[int]], list[str]]:
     """Extract detection data from an Ultralytics Results object.
 
     Filters detections by confidence score and extracts bounding box
@@ -30,9 +30,9 @@ def parse_detections(
             colors (List[List[int]]): RGB color values associated with each class, e.g., ``[[255, 0, 0], ...]``.
             names (List[str]): Class names corresponding to each detection.
     """
-    boxes: List[np.ndarray] = []
-    colors: List[List[int]] = []
-    names: List[str] = []
+    boxes: list[np.ndarray] = []
+    colors: list[list[int]] = []
+    names: list[str] = []
 
     res = results[0]
 
@@ -52,16 +52,16 @@ def parse_detections(
 
 
 def draw_detections(
-    boxes: List[np.ndarray],
-    colors: List[List[int]],
-    names: List[str],
+    boxes: list[np.ndarray],
+    colors: list[list[int]],
+    names: list[str],
     img: np.ndarray,
 ) -> np.ndarray:
     """Draw bounding boxes and labels on an image.
 
     Note:
         OpenCV natively expects colors in BGR format for its drawing functions.
-        If the provided ``colors`` list is in RGB format, the rendered boxes 
+        If the provided ``colors`` list is in RGB format, the rendered boxes
         will have their Red and Blue channels visually swapped.
 
     Args:
@@ -77,7 +77,7 @@ def draw_detections(
         x1, y1, x2, y2 = box
         # OpenCV uses native tuples or lists of ints for colors
         color_tuple = tuple(int(c) for c in color)
-        
+
         cv2.rectangle(img, (x1, y1), (x2, y2), color_tuple, 2)
         cv2.putText(
             img,
@@ -93,9 +93,9 @@ def draw_detections(
 
 
 def renormalize_cam_in_bounding_boxes(
-    boxes: List[np.ndarray],
-    colors: List[List[int]],
-    names: List[str],
+    boxes: list[np.ndarray],
+    colors: list[list[int]],
+    names: list[str],
     image_float_np: np.ndarray,
     grayscale_cam: np.ndarray,
 ) -> np.ndarray:
@@ -141,8 +141,8 @@ def renormalize_cam_in_bounding_boxes(
 
 
 def parse_classification(
-    results: List[Results],
-) -> Tuple[Optional[int], str, float]:
+    results: list[Results],
+) -> tuple[Optional[int], str, float]:
     """Extract top-1 classification data from an Ultralytics Results object.
 
     Args:
@@ -211,8 +211,8 @@ def process_classification_cam(
 
 
 def parse_segmentation(
-    results: List[Results],
-) -> Tuple[List[np.ndarray], List[np.ndarray], List[List[int]], List[str]]:
+    results: list[Results],
+) -> tuple[list[np.ndarray], list[np.ndarray], list[list[int]], list[str]]:
     """Extract segmentation masks and bounding box data from Ultralytics Results.
 
     Args:
@@ -225,10 +225,10 @@ def parse_segmentation(
             colors (List[List[int]]): RGB color values associated with each class.
             names (List[str]): Class names corresponding to each detection.
     """
-    boxes: List[np.ndarray] = []
-    masks_xy: List[np.ndarray] = []
-    colors: List[List[int]] = []
-    names: List[str] = []
+    boxes: list[np.ndarray] = []
+    masks_xy: list[np.ndarray] = []
+    colors: list[list[int]] = []
+    names: list[str] = []
 
     res = results[0]
     if res.masks is not None and res.boxes is not None:
@@ -248,10 +248,10 @@ def parse_segmentation(
 
 
 def process_segmentation_cam(
-    boxes: List[np.ndarray],
-    masks_xy: List[np.ndarray],
-    colors: List[List[int]],
-    names: List[str],
+    boxes: list[np.ndarray],
+    masks_xy: list[np.ndarray],
+    colors: list[list[int]],
+    names: list[str],
     image_float_np: np.ndarray,
     grayscale_cam: np.ndarray,
 ) -> np.ndarray:
