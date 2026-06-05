@@ -21,9 +21,12 @@ class InferenceObj(BaseModel):
         reshape_transform (Optional[Callable]): Optional transform function for CAM spatial dimensions.
         verbose (bool): Whether to enable verbose logging during inference.
     """
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    image_data: str | Path | int | Image.Image | list | tuple | np.ndarray | torch.Tensor = None
+    image_data: (
+        str | Path | int | Image.Image | list | tuple | np.ndarray | torch.Tensor
+    ) = None
     image_name: str = Field(default_factory=lambda: f"{uuid.uuid4()}.png")
     save: bool = True
     output_dir: str = "./output"
