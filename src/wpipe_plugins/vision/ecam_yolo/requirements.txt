@@ -3,3 +3,6 @@ grad-cam>=1.4.8
 opencv-python>=4.8.0
 torch>=1.7.1
 torchvision>=0.8.2
+loguru>=0.7.2
+numpy>=2.2.6
+pillow>=10.3.0
