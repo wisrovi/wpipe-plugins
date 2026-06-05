@@ -1,5 +1,6 @@
 """Constants configuration module."""
 
+
 class DEVICE:
     """Constants for available compute devices.
 
