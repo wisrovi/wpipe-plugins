@@ -25,7 +25,7 @@ and output generation with configurable settings and error handling.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import cv2
 import numpy as np
@@ -33,19 +33,23 @@ import torch.nn as nn
 from loguru import logger
 from PIL import Image
 from pytorch_grad_cam import EigenCAM
+from torchvision import transforms
+from ultralytics import YOLO
+from wpipe import step, to_obj
+
 # --- Internal Architecture Imports ---
 from ..config.constants import DEVICE
 from ..exceptions.yoloError import YoloError
 from ..schemas.inference import InferenceObj, Path
-from ..utils.vision_helpers import (parse_classification, parse_detections,
-                                      parse_segmentation,
-                                      process_classification_cam,
-                                      process_segmentation_cam,
-                                      renormalize_cam_in_bounding_boxes)
+from ..utils.vision_helpers import (
+    parse_classification,
+    parse_detections,
+    parse_segmentation,
+    process_classification_cam,
+    process_segmentation_cam,
+    renormalize_cam_in_bounding_boxes,
+)
 from ..wrappers.yolo_wrapper import YOLOUniversalWrapper
-from torchvision import transforms
-from ultralytics import YOLO
-from wpipe import step, to_obj
 
 
 @dataclass
@@ -107,7 +111,7 @@ class ImageECamYOLO:
         except (FileNotFoundError, RuntimeError, OSError) as e:
             raise YoloError(f"Error loading model: {e}") from e
 
-    def _get_target_layers(self) -> List[nn.Module]:
+    def _get_target_layers(self) -> list[nn.Module]:
         """Retrieves the optimal feature map layers across all YOLO variants and tasks.
 
         This method dynamically inspects the loaded architecture to capture the most
@@ -187,7 +191,7 @@ class ImageECamYOLO:
 
     def _process_task(
         self, results: Any, img_float: np.ndarray, grayscale_cam: np.ndarray
-    ) -> Tuple[np.ndarray, Dict[str, Any]]:
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """Process YOLO outputs depending on the specific model task type.
 
         Args:
@@ -271,8 +275,8 @@ class ImageECamYOLO:
         }
 
     def _save_visualization(
-        self, final_img: np.ndarray, output_path: Path, output_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, final_img: np.ndarray, output_path: Path, output_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Save Grad-CAM / YOLO visualization and attach it to output results.
 
         Args:
@@ -299,7 +303,7 @@ class ImageECamYOLO:
         return output_results
 
     @to_obj(InferenceObj)
-    def __call__(self, image_info: InferenceObj) -> Dict[str, Any]:
+    def __call__(self, image_info: InferenceObj) -> dict[str, Any]:
         """Run YOLO inference and generate Eigen-CAM visualizations.
 
         Depending on the detected YOLO task type, this method executes either
