@@ -7,13 +7,39 @@ Thank you for your interest in contributing to wpipe!
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/wpipe.git
-   cd wpipe
+   git clone [https://github.com/YOUR_USERNAME/wpipe-plugins.git](https://github.com/YOUR_USERNAME/wpipe-plugins.git)
+   cd wpipe-plugins
    ```
-3. Install dependencies:
+3. Configure the upstream remote to keep your fork synced with the main repository:
+   ```bash
+   git remote add upstream [https://github.com/wisrovi/wpipe-plugins.git](https://github.com/wisrovi/wpipe-plugins.git)
+   ```
+4. Install dependencies:
    ```bash
    pip install -e ".[dev]"
    ```
+
+## Development Workflow
+
+1. Always pull the latest changes from the main repository before working:
+   ```bash
+   git checkout main
+   git pull upstream main
+   ```
+2. Create a new branch for your feature, bugfix, or new plugin:
+   ```bash
+   git checkout -b feature/your-plugin-name
+   ```
+3. Make your changes, ensure code quality, and commit them:
+   ```bash
+   git add .
+   git commit -m "feat: add your awesome plugin"
+   ```
+4. Push the branch to your own GitHub fork:
+   ```bash
+   git push origin feature/your-plugin-name
+   ```
+5. Go to the original `wpipe-plugins` repository on GitHub, and you will see a banner to open a Pull Request from your branch.
 
 ## Development
 
@@ -24,63 +50,44 @@ Thank you for your interest in contributing to wpipe!
 pytest
 
 # Run with coverage
-pytest --cov=wpipe --cov-report=html
-
-# Run specific test file
-pytest test/test_pipeline.py
+pytest --cov=wpipe_plugins --cov-report=html
 ```
 
 ### Code Quality
 
 ```bash
 # Lint with ruff
-ruff check wpipe/
+ruff check wpipe_plugins/
 
 # Type checking with mypy
-mypy wpipe/
+mypy wpipe_plugins/
 
 # Format code with black
-black wpipe/
+black wpipe_plugins/
 ```
 
 ### Running All Quality Checks
 
 ```bash
-ruff check wpipe/ && mypy wpipe/ && pytest
-```
-
-## Project Structure
-
-```
-wpipe/
-├── wpipe/
-│   ├── __init__.py
-│   ├── api_client/       # API client for pipeline tracking
-│   ├── exception/        # Custom exceptions
-│   ├── log/              # Logging utilities
-│   ├── pipe/             # Core pipeline implementation
-│   ├── ram/              # Memory limit utilities
-│   ├── sqlite/           # SQLite database utilities
-│   └── util/             # YAML utilities
-├── test/                 # Core library tests
-└── examples/             # Example scripts
-    └── test/             # Example tests
+ruff check wpipe_plugins/ && mypy wpipe_plugins/ && pytest
 ```
 
 ## Writing Tests
 
-- All new features should include tests
-- Tests are in `test/` for core functionality
-- Example tests are in `examples/test/`
-- Use descriptive test names: `test_<feature>_<behavior>`
+- All new plugins or features must include tests
+- Tests should cover plugin initialization and core execution logic
+- Use descriptive test names: test_<plugin_name>_<behavior>
+
+
 
 ## Pull Request Guidelines
 
 1. Ensure all tests pass
-2. Run linting: `ruff check wpipe/`
-3. Run type checking: `mypy wpipe/`
-4. Update documentation if needed
+2. Run linting: ruff check wpipe_plugins/
+3. Run type checking: mypy wpipe_plugins/
+4. Update documentation or README if needed (add your plugin description)
 5. Keep changes focused and atomic
+6. Make sure you are submitting the PR from your fork's branch to wpipe-plugins:main
 
 ## Code Style
 
@@ -94,3 +101,7 @@ wpipe/
 - Use the GitHub issue tracker
 - Include a minimal reproducible example
 - Specify your Python version and OS
+
+## Author
+- William Rodríguez - wisrovi
+
