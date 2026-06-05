@@ -7,9 +7,9 @@ import torch
 
 class YOLOUniversalWrapper(torch.nn.Module):
     """Wraps a YOLO model to guarantee a single flat tensor output.
-    
-    This is required for compatibility with PyTorch-Grad-CAM workflows, 
-    as YOLO variants often return complex nested structures (tuples, dicts, lists) 
+
+    This is required for compatibility with PyTorch-Grad-CAM workflows,
+    as YOLO variants often return complex nested structures (tuples, dicts, lists)
     containing raw predictions, anchors, and metadata.
     """
 
