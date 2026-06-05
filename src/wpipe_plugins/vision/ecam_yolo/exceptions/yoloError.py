@@ -35,7 +35,7 @@ class YoloError(VisionPipelineError):
     This covers model loading failures, processing mismatches, or mathematical
     inconsistencies during backward/forward tracking layers.
     """
-    
+
     def __init__(self, message: str, error_code: str = "YOLO_INFERENCE_ERROR") -> None:
         """Initialize the YOLO-specific inference exception."""
         super().__init__(message, error_code=error_code)
