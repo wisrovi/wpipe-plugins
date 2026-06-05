@@ -43,10 +43,22 @@ print(results)
 
 We welcome community contributions! Please read our [Plugin Contribution Guide](src/wpipe_plugins/CONTRIBUTING_PLUGINS.md) to get started.
 
+Contributions are welcome! Please follow these steps to contribute to the project:
+
+1. **Fork** the repository.
+2. **Clone** your fork to your local machine.
+3. Create a new **branch** for your feature or bugfix (`git checkout -b feature/amazing-feature`).
+4. **Commit** your changes (`git commit -m 'Add some amazing feature'`).
+5. **Push** to the branch (`git push origin feature/amazing-feature`).
+6. Open a **Pull Request** against the main repository.
+
 ### Contribution Rules
 - Target your Pull Request to a branch starting with `001***`.
 - Assign @william-rodriguez as a mandatory reviewer.
 - Ensure your plugin includes a `README.md`, `LICENSE`, and `examples/`.
+
+Please ensure your code adheres to the project's standards and all tests pass before submitting.
+
 
 ## License
 
