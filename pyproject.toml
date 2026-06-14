@@ -3,119 +3,81 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "wpipe"
-version = "1.5.3"
+name = "wpipe-plugins"
+version = "0.1.0"
 authors = [
-    { name = "William Steve Rodriguez Villamizar", email = "wisrovi.rodriguez@gmail.com" }
+    { name = "William Steve Rodriguez Villamizar", email = "wisrovi.rodriguez@gmail.com" },
 ]
-description = "Pipeline library with API integration for task orchestration and execution tracking"
+description = "Plugins and extensions for the wpipe ecosystem, including AI agents and vision models"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
-keywords = [
-    "pipeline",
-    "workflow",
-    "tasks",
-    "orchestration",
-    "api",
-    "worker",
-]
+requires-python = ">=3.12, <3.14"
+keywords = ["pipeline", "plugins", "wpipe", "vision", "ai", "yolo"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Intended Audience :: Developers",
-    "Development Status :: 5 - Production/Stable",
 ]
 dependencies = [
-    "requests>=2.31.0",
-    "loguru>=0.7.0",
-    "pandas>=2.0.0",
-    "pyyaml>=6.0.1",
-    "tqdm>=4.66.0",
-    "rich>=13.7.0",
-    "pydantic>=2.0.0",
-    "fastapi>=0.100.0",
-    "uvicorn>=0.23.0",
-    "wsqlite>=0.1.0",
+    "wpipe==2.4.0",
+    "loguru==0.7.3",
+    "ultralytics==8.4.67",
+    "grad-cam==1.5.5",
+    "opencv-python==4.13.0.92",
+    "pydantic==2.13.4",
+    "torch==2.12.0",
+    "torchvision==0.27.0",
+    "numpy==2.4.6",
+    "pillow==12.2.0",
+    "requests==2.34.2",
+    "pandas==3.0.3"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "black>=23.0.0",
-    "ruff>=0.1.0",
-    "mypy>=1.7.0",
+    "pytest==9.1.0",
+    "pytest-cov==7.1.0",
+    "black==26.5.1",
+    "ruff==0.15.17",
+    "mypy==2.1.0",
 ]
 docs = [
-    "sphinx>=7.2.0",
-    "sphinx-rtd-theme>=2.0.0",
-    "sphinx-copybutton>=0.5.0",
-    "myst-parser>=2.0.0",
-    "sphinx-sitemap>=2.5.0",
-    "sphinx-design>=0.5.0",
+    "sphinx==9.1.0",
+    "sphinx-rtd-theme==3.1.0",
+    "sphinx-copybutton==0.5.2",
+    "myst-parser==5.1.0",
+    "sphinx-sitemap==2.9.0",
+    "sphinx-design==0.7.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/wisrovi/wpipe"
-Documentation = "https://wpipe.readthedocs.io/en/latest/"
-Repository = "https://github.com/wisrovi/wpipe"
-Issues = "https://github.com/wisrovi/wpipe/issues"
-Changelog = "https://github.com/wisrovi/wpipe/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/wisrovi/wpipe-plugins"
+Repository = "https://github.com/wisrovi/wpipe-plugins"
+Issues = "https://github.com/wisrovi/wpipe-plugins/issues"
 
 [tool.hatch.build.targets.sdist]
-include = [
-    "/wpipe",
-    "/examples/01_basic_pipeline",
-    "/examples/02_api_pipeline",
-    "/examples/11_checkpointing",
-    "/examples/12_timeouts",
-    "/examples/13_type_hinting",
-    "/examples/14_resource_monitor",
-    "/examples/15_export",
-    "/examples/16_parallelism",
-    "/test",
-]
-exclude = [
-    "**/*.db",
-    "**/*.log",
-    "**/*.zip",
-    "**/__pycache__",
-    "**/configs",
-    "**/logs",
-    "**/*.yaml",
-]
+include = ["/src", "/tests"]
+exclude = ["**/*.db", "**/*.log", "**/*.zip", "**/__pycache__"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["wpipe"]
-exclude = [
-    "**/*.db",
-    "**/*.log",
-    "**/*.zip",
-    "**/__pycache__",
-]
+packages = ["src/wpipe_plugins"]
+exclude = ["**/*.db", "**/*.log", "**/*.zip", "**/__pycache__"]
 
 [tool.pytest.ini_options]
-testpaths = ["test"]
+testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
 
 [tool.coverage.run]
-source = ["wpipe"]
+source = ["src/wpipe_plugins"]
 branch = true
-omit = [
-    "*/tests/*",
-    "*/examples/*",
-]
+omit = ["*/tests/*", "*/examples/*"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -125,7 +87,7 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 show_missing = true
-fail_under = 72
+fail_under = 70
 
 [tool.black]
 line-length = 88
@@ -138,17 +100,17 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
 ]
 ignore = [
-    "E501",  # line too long
-    "B008",  # do not perform function calls in argument defaults
+    "E501", # line too long
+    "B008", # do not perform function calls in argument defaults
 ]
 
 [tool.mypy]

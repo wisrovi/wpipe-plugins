@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "name": "ecam_yolo",
+    "func_name": "ImageECamYOLO",
+    "namespace": "wpipe_plugins.vision.ecam_yolo",
+    "version": "0.1.0",
+    "description": "YOLO integration with Eigen-CAM for heatmap visualization in detection, classification, and segmentation tasks.",
+    "license": "MIT",
+    "repo": "Official",
+    "author": "Ernesto Fernandez",
+    "examples": "src/wpipe_plugins/vision/ecam_yolo/examples/",
+    "environment": "Compatible with Linux, Windows and macOS. GPU (NVIDIA) recommended for optimal performance.",
+    "requirements": "src/wpipe_plugins/vision/ecam_yolo/requirements.txt",
+    "how_to_use": "from wpipe_plugins.vision.ecam_yolo import ImageECamYOLO, ECAMConfig"
+  }
+]
