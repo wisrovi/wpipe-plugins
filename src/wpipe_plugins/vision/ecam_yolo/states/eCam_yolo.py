@@ -390,7 +390,8 @@ class ImageECamYOLO:
                     [result], img_float, grayscale_cam
                 )
 
-                output_path = Path(image_info.output_dir) / Path(result.path).name
+                result_path_str = result.path if result.path is not None else image_info.image_name
+                output_path = Path(image_info.output_dir) / Path(result_path_str).name
                 if (
                     getattr(image_info, "save", True)
                     or image_info.output_dir != "./output"
