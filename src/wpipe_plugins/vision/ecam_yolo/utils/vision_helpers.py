@@ -8,8 +8,31 @@ from ultralytics.engine.results import Results
 
 # Set seed for reproducible color generation
 np.random.seed(42)
-# Generate colors directly in np.uint8 to avoid compatibility issues with OpenCV
+# Generate initial colors directly in np.uint8 to avoid compatibility issues with OpenCV
+# We start with 80 classes (COCO standard) but will expand dynamically if needed.
 COLORS: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(np.uint8)
+
+
+def get_color(cls: int) -> list[int]:
+    """Retrieve or generate a color for a specific class index.
+
+    If the class index exceeds the current global COLORS array, it is expanded
+    dynamically while maintaining reproducibility through a fixed seed.
+
+    Args:
+        cls (int): The class index.
+
+    Returns:
+        List[int]: RGB color values.
+    """
+    global COLORS
+    if cls >= len(COLORS):
+        # Expand colors to accommodate the new class index plus a buffer
+        new_size = cls + 20
+        np.random.seed(42)  # Re-seed to ensure the first 80 remain identical
+        COLORS = np.random.uniform(0, 255, size=(new_size, 3)).astype(np.uint8)
+
+    return COLORS[cls].tolist()
 
 
 def parse_detections(
@@ -45,7 +68,7 @@ def parse_detections(
             cls = int(box.cls[0])
 
             boxes.append(coords)
-            colors.append(COLORS[cls].tolist())
+            colors.append(get_color(cls))
             names.append(res.names[cls])
 
     return boxes, colors, names
@@ -240,7 +263,7 @@ def parse_segmentation(
 
             boxes.append(coords)
             masks_xy.append(mask_xy.astype(np.int32))
-            colors.append(COLORS[cls].tolist())
+            colors.append(get_color(cls))
             names.append(res.names[cls])
 
     return boxes, masks_xy, colors, names
