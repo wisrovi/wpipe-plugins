@@ -1,4 +1,6 @@
-# RSS Parser Step
+# RSS Parser Step (Community Supported)
+
+> **Community Support**: This state is part of the `wpipe-plugins` community repository. It is built and supported by the community. For official author-maintained states, visit [wpipe-steps](https://github.com/wisrovi/wpipe-steps).
 
 This state allows for easy parsing of RSS feeds and integration into a `wpipe` pipeline.
 
