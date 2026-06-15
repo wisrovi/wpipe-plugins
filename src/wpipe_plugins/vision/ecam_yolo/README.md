@@ -1,6 +1,9 @@
-# ECAM-YOLO Plugin
+# ECAM-YOLO Plugin (Community Supported)
 
-The **ECAM-YOLO** plugin provides a seamless integration of YOLO models with **Eigen-CAM** visualization within the `wpipe` pipeline ecosystem. It automatically supports object detection, image classification, and segmentation tasks, generating heatmaps that highlight the regions influencing model predictions.
+> **Community Support**: This state is part of the `wpipe-plugins` community repository. It is built and supported by the community. For official author-maintained states, visit [wpipe-steps](https://github.com/wisrovi/wpipe-steps).
+
+The **ECAM-YOLO** plugin provides a seamless integration of YOLO models with **Eigen-CAM** visualization within the `wpipe` pipeline ecosystem.
+ It automatically supports object detection, image classification, and segmentation tasks, generating heatmaps that highlight the regions influencing model predictions.
 
 ## Key Features
 
