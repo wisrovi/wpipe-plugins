@@ -2,9 +2,14 @@
 
 Plugins and extensions for the [wpipe](https://github.com/wisrovi/wpipe) ecosystem.
 
+> **Important Note**: This repository is a community-driven space. It is designed for the community to build, share, and support their own states (steps) for `wpipe`. While the structure is professional and standardized, the maintenance and support of these plugins are provided by the community itself.
+>
+> If you are looking for the **official states** maintained directly by the author, please visit: [wpipe-steps](https://github.com/wisrovi/wpipe-steps).
+
 ## Overview
 
-This repository contains a collection of professional plugins (steps) for the `wpipe` pipeline engine, ranging from AI vision models to connectivity tools.
+This repository contains a collection of community-supported professional plugins (steps) for the `wpipe` pipeline engine, ranging from AI vision models to connectivity tools.
+
 
 ## Key Features
 
