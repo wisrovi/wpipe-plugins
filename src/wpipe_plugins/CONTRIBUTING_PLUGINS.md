@@ -1,6 +1,10 @@
-# Plugin Contribution Guide: New States for wpipe-plugins
+# Community Plugin Guide: Building Supported States for wpipe-plugins
 
-Thank you for your interest in contributing to the `wpipe` ecosystem! This guide establishes the professional standards required for all new states (steps) to ensure library quality and maintainability.
+Thank you for your interest in contributing to the `wpipe` ecosystem! 
+
+**wpipe-plugins** is a community-driven repository where developers can build, share, and support their own states (steps). Unlike the [official author-maintained states](https://github.com/wisrovi/wpipe-steps), this repository is the home for community-supported innovation.
+
+This guide establishes the professional standards required for all new community states to ensure library quality, interoperability, and long-term maintainability.
 
 ## 1. Mandatory Directory Structure
 
