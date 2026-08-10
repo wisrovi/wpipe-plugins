@@ -1,52 +1,66 @@
-"""Example script for YOLO image segmentation with ECAM visualization."""
+"""Example script for YOLO image segmentation with ECAM visualization.
 
+Usage:
+    python example_segmentation.py --model yolov8n-seg.pt --image bus.jpg
+                                   [--output-dir ./output/segmentation]
+                                   [--device cpu] [--conf 0.25]
+"""
+
+import argparse
 import os
 from typing import Any
 
 from loguru import logger
 from wpipe import Pipeline
 
-# Importing from the plugin
-from ..states.eCam_yolo import ECAMConfig, ImageECamYOLO
+# Importing from the installed library
+from wpipe_plugins.vision.ecam_yolo import ECAMConfig, ImageECamYOLO
 
 
-def run_segmentation_example():
-    """Demonstrates how to run image segmentation with ECAM."""
+def run_segmentation_example(
+    model_path: str,
+    image_path: str,
+    output_dir: str = "./output/segmentation",
+    device: str = "cpu",
+    confidence_threshold: float = 0.25,
+) -> None:
+    """Demonstrates how to run image segmentation with ECAM.
 
-    # 1. Setup Configuration for Segmentation
-    config = ECAMConfig(
-        model_path="/models/yolo26l/yolo26l-seg.pt",
-        confidence_threshold=0.3,
-        device="cpu",
+    Args:
+        model_path (str): Path to the YOLO segmentation weights file (``.pt``).
+        image_path (str): Path to the input image.
+        output_dir (str): Directory where the visualization is saved.
+        device (str): Compute device, ``'cpu'`` or a GPU index like ``'0'``.
+        confidence_threshold (float): Minimum confidence for a valid prediction.
+    """
+    pipe = Pipeline(pipeline_name="segmentation_example_pipeline", verbose=True)
+    pipe.set_steps(
+        [
+            ImageECamYOLO(
+                ECAMConfig(
+                    model_path=model_path,
+                    confidence_threshold=confidence_threshold,
+                    device=device,
+                )
+            )
+        ]
     )
 
-    # 2. Initialize the ECAM Step
-    segmentation_step = ImageECamYOLO(config)
-
-    # 3. Setup the Pipeline
-    pipe = Pipeline(pipeline_name="segmentation_example_pipeline", verbose=True)
-    pipe.set_steps([segmentation_step])
-
     # 4. Prepare Input Data
-    input_image = "/media/sample_image.jpg"
-    output_dir = "./output/segmentation"
-
     os.makedirs(output_dir, exist_ok=True)
 
     inference_data = {
-        "image_data": input_image,
-        "image_name": "sample_segmentation.jpg",
-        "save": True,
+        "image_data": image_path,
         "output_dir": output_dir,
-        "verbose": True,
     }
 
     # 5. Run the Pipeline
     logger.info("Starting segmentation pipeline...")
     try:
-        results: list[dict[str, Any]] = pipe.run(inference_data)
+        context: dict[str, Any] = pipe.run(inference_data)
+        results: list[dict[str, Any]] = context.get("results", [])
 
-        for result in enumerate(results):
+        for result in results:
             logger.info(f"Segmented Objects: {len(result['model_results'])}")
             for obj in result["model_results"]:
                 if obj.get("status") == "ok":
@@ -58,5 +72,30 @@ def run_segmentation_example():
         logger.error(f"Pipeline execution failed: {e}")
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="YOLO image segmentation with Eigen-CAM visualization (wpipe)."
+    )
+    parser.add_argument(
+        "--model", required=True, help="Path to YOLO segmentation weights file (.pt)"
+    )
+    parser.add_argument("--image", required=True, help="Path to the input image")
+    parser.add_argument(
+        "--output-dir",
+        default="./output/segmentation",
+        help="Directory to save the visualization",
+    )
+    parser.add_argument(
+        "--device", default="cpu", help="Compute device: 'cpu' or a GPU index like '0'"
+    )
+    parser.add_argument(
+        "--conf", type=float, default=0.25, help="Confidence threshold (default: 0.25)"
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    run_segmentation_example()
+    args = _parse_args()
+    run_segmentation_example(
+        args.model, args.image, args.output_dir, args.device, args.conf
+    )
