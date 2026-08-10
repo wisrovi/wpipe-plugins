@@ -1,22 +1,20 @@
 """Custom exceptions for the vision diagnostics and inference pipeline."""
 
-from typing import Optional
-
 
 class VisionPipelineError(Exception):
     """Base exception for all errors raised within the vision pipeline.
 
     Attributes:
         message (str): Explanation of the error.
-        error_code (Optional[str]): Standardized alphanumeric code for debugging.
+        error_code (str | None): Standardized alphanumeric code for debugging.
     """
 
-    def __init__(self, message: str, error_code: Optional[str] = None) -> None:
+    def __init__(self, message: str, error_code: str | None = None) -> None:
         """Initialize the base vision pipeline exception.
 
         Args:
             message (str): Detailed description of the error.
-            error_code (Optional[str]): Optional error identifier code. Defaults to None.
+            error_code (str | None): Optional error identifier code. Defaults to None.
         """
         super().__init__(message)
         self.message = message
