@@ -70,12 +70,15 @@ pipe.set_steps([ecam_step])
 The step expects an input dictionary (or an `InferenceObj`) containing:
 - `image_data`: Path to the image, PIL Image, or Numpy array.
 - `output_dir`: Directory to save visualizations.
+- `model_path` *(optional)*: Selects (or overrides) the model used for that run.
+
+The `save` (always `True`), `verbose` (always `False`) and `image_name`
+fields are set internally by the step and must **not** be provided in the run.
 
 ```python
 inference_data = {
     "image_data": "sample.jpg",
-    "output_dir": "./output",
-    "verbose": True
+    "output_dir": "./output"
 }
 
 results = pipe.run(inference_data)
