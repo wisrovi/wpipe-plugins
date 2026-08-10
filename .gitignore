@@ -171,3 +171,8 @@ cython_debug/
 .pypirc
 
 .gemini
+
+# Generated example artifacts (logs, visualizations, real-run outputs)
+**/logs/
+**/output_eigecam/
+demo_real/output/
