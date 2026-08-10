@@ -1,22 +1,48 @@
 """Helper functions for image processing, drawing, and Grad-CAM blending."""
 
-from typing import Optional
-
 import cv2
 import numpy as np
 from ultralytics.engine.results import Results
 
 # Set seed for reproducible color generation
 np.random.seed(42)
-# Generate initial colors directly in np.uint8 to avoid compatibility issues with OpenCV
-# We start with 80 classes (COCO standard) but will expand dynamically if needed.
-COLORS: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(np.uint8)
+
+
+class _ColorPalette:
+    """Reproducible per-class color generator that expands on demand.
+
+    Colors are generated directly in np.uint8 to avoid compatibility issues with
+    OpenCV. The palette starts with 80 classes (COCO standard) and is expanded
+    dynamically while keeping the seed fixed so the first 80 stay identical.
+    """
+
+    def __init__(self) -> None:
+        self._colors: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(np.uint8)
+
+    def get(self, cls: int) -> list[int]:
+        """Return the RGB color for a class index, expanding the palette if needed.
+
+        Args:
+            cls (int): The class index.
+
+        Returns:
+            List[int]: RGB color values.
+        """
+        if cls >= len(self._colors):
+            new_size = cls + 20
+            np.random.seed(42)  # Re-seed to ensure the first 80 remain identical
+            self._colors = np.random.uniform(0, 255, size=(new_size, 3)).astype(np.uint8)
+
+        return self._colors[cls].tolist()
+
+
+_COLOR_PALETTE = _ColorPalette()
 
 
 def get_color(cls: int) -> list[int]:
     """Retrieve or generate a color for a specific class index.
 
-    If the class index exceeds the current global COLORS array, it is expanded
+    If the class index exceeds the current palette size, it is expanded
     dynamically while maintaining reproducibility through a fixed seed.
 
     Args:
@@ -25,14 +51,7 @@ def get_color(cls: int) -> list[int]:
     Returns:
         List[int]: RGB color values.
     """
-    global COLORS
-    if cls >= len(COLORS):
-        # Expand colors to accommodate the new class index plus a buffer
-        new_size = cls + 20
-        np.random.seed(42)  # Re-seed to ensure the first 80 remain identical
-        COLORS = np.random.uniform(0, 255, size=(new_size, 3)).astype(np.uint8)
-
-    return COLORS[cls].tolist()
+    return _COLOR_PALETTE.get(cls)
 
 
 def parse_detections(
@@ -91,18 +110,31 @@ def draw_detections(
         boxes (List[np.ndarray]): List of bounding boxes in ``[x1, y1, x2, y2]`` format.
         colors (List[List[int]]): List of color values for each detection.
         names (List[str]): List of class names for each detection.
-        img (np.ndarray): Input image where detections will be drawn.
+        img (np.ndarray): Input image where detections will be drawn. Float
+            images (values in [0, 1]) are drawn on a uint8 copy and returned
+            in the same dtype and range.
 
     Returns:
-        np.ndarray: Image with rendered bounding boxes and labels.
+        np.ndarray: Image with rendered bounding boxes and labels, in the same
+            dtype and value range as ``img``.
+
+    Note:
+        OpenCV ``putText`` requires a uint8 image (since OpenCV 5.0.0 a float
+        image raises an assertion error), so float input is converted for
+        drawing and converted back before returning.
     """
-    for box, color, name in zip(boxes, colors, names):
+    float_input = img.dtype != np.uint8
+    draw_img = (
+        np.round(np.clip(img, 0, 1) * 255).astype(np.uint8) if float_input else img
+    )
+
+    for box, color, name in zip(boxes, colors, names, strict=True):
         x1, y1, x2, y2 = box
         # OpenCV uses native tuples or lists of ints for colors
         color_tuple = tuple(int(c) for c in color)
-        cv2.rectangle(img, (x1, y1), (x2, y2), color_tuple, 2)
+        cv2.rectangle(draw_img, (x1, y1), (x2, y2), color_tuple, 2)
         cv2.putText(
-            img,
+            draw_img,
             name,
             (x1, y1 - 5),
             cv2.FONT_HERSHEY_SIMPLEX,
@@ -111,7 +143,10 @@ def draw_detections(
             2,
             lineType=cv2.LINE_AA,
         )
-    return img
+
+    if float_input:
+        return draw_img.astype(np.float32) / 255.0
+    return draw_img
 
 
 def renormalize_cam_in_bounding_boxes(
@@ -164,7 +199,7 @@ def renormalize_cam_in_bounding_boxes(
 
 def parse_classification(
     results: list[Results],
-) -> tuple[Optional[int], str, float]:
+) -> tuple[int | None, str, float]:
     """Extract top-1 classification data from an Ultralytics Results object.
 
     Args:
@@ -254,7 +289,7 @@ def parse_segmentation(
 
     res = results[0]
     if res.masks is not None and res.boxes is not None:
-        for box, mask_xy in zip(res.boxes, res.masks.xy):
+        for box, mask_xy in zip(res.boxes, res.masks.xy, strict=True):
             conf = float(box.conf[0])
             if conf < 0.2:
                 continue
@@ -302,7 +337,7 @@ def process_segmentation_cam(
 
     # 2. Render translucent masks
     mask_overlay = cam_image_uint8.copy()
-    for mask, color in zip(masks_xy, colors):
+    for mask, color in zip(masks_xy, colors, strict=True):
         if len(mask) > 0:
             color_tuple = tuple(int(c) for c in color)
             cv2.fillPoly(mask_overlay, [mask], color_tuple)
