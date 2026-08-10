@@ -1,6 +1,6 @@
 """Universal wrapper for YOLO models to ensure standardized tensor outputs for Grad-CAM."""
 
-from typing import Any, Optional
+from typing import Any
 
 import torch
 
@@ -18,7 +18,7 @@ class YOLOUniversalWrapper(torch.nn.Module):
         super().__init__()
         self.model = model
 
-    def _find_first_tensor(self, obj: Any) -> Optional[torch.Tensor]:
+    def _find_first_tensor(self, obj: Any) -> torch.Tensor | None:
         """Recursively search through nested structures to extract the primary output tensor.
 
         Args:
