@@ -3,7 +3,7 @@
     "name": "ecam_yolo",
     "func_name": "ImageECamYOLO",
     "namespace": "wpipe_plugins.vision.ecam_yolo",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "YOLO integration with Eigen-CAM for heatmap visualization in detection, classification, and segmentation tasks.",
     "license": "MIT",
     "repo": "Official",

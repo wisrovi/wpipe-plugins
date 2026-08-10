@@ -1,0 +1,14 @@
+# Requirements to run eigecam.py (wpipe-plugins/examples/vision/ecam_yolo/)
+# Installs the published library (PyPI) plus its runtime dependencies.
+# On Linux, PyPI torch wheels bundle CUDA; eigecam.py uses device 0 (GPU).
+wpipe-plugins>=0.1.1
+wpipe>=2.4.0
+loguru>=0.7.3
+ultralytics>=8.4.67
+grad-cam>=1.5.5
+opencv-python>=4.13.0.92
+pydantic>=2.10.0
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+pillow>=10.0.0
