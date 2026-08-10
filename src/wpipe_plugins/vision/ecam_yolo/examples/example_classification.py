@@ -1,59 +1,96 @@
-"""Example script for YOLO image classification with ECAM visualization."""
+"""Example script for YOLO image classification with ECAM visualization.
 
+Usage:
+    python example_classification.py --model yolov8n-cls.pt --image cat.jpg
+                                     [--output-dir ./output/classification]
+                                     [--device cpu] [--conf 0.25]
+"""
+
+import argparse
 import os
 from typing import Any
 
 from loguru import logger
 from wpipe import Pipeline
 
-# Importing from the plugin
-from ..states.eCam_yolo import ECAMConfig, ImageECamYOLO
+# Importing from the installed library
+from wpipe_plugins.vision.ecam_yolo import ECAMConfig, ImageECamYOLO
 
 
-def run_classification_example():
-    """Demonstrates how to run classification with ECAM."""
+def run_classification_example(
+    model_path: str,
+    image_path: str,
+    output_dir: str = "./output/classification",
+    device: str = "cpu",
+    confidence_threshold: float = 0.25,
+) -> None:
+    """Demonstrates how to run classification with ECAM.
 
-    # 1. Setup Configuration
-    config = ECAMConfig(
-        model_path="/models/yolo26l/yolo26l-cls.pt",
-        confidence_threshold=0.3,
-        device="cpu",
+    Args:
+        model_path (str): Path to the YOLO classification weights file (``.pt``).
+        image_path (str): Path to the input image.
+        output_dir (str): Directory where the visualization is saved.
+        device (str): Compute device, ``'cpu'`` or a GPU index like ``'0'``.
+        confidence_threshold (float): Minimum confidence for a valid prediction.
+    """
+    pipe = Pipeline(pipeline_name="classification_example_pipeline", verbose=True)
+    pipe.set_steps(
+        [
+            ImageECamYOLO(
+                ECAMConfig(
+                    model_path=model_path,
+                    confidence_threshold=confidence_threshold,
+                    device=device,
+                )
+            )
+        ]
     )
 
-    # 2. Initialize the ECAM Step
-    classification_step = ImageECamYOLO(config)
-
-    # 3. Setup the Pipeline
-    pipe = Pipeline(pipeline_name="classification_example_pipeline", verbose=True)
-    pipe.set_steps([classification_step])
-
     # 4. Prepare Input Data
-    input_image = "/media/sample_image.jpg"
-    output_dir = "./output/classification"
-
     os.makedirs(output_dir, exist_ok=True)
 
     inference_data = {
-        "image_data": input_image,
-        "image_name": "sample_classification.jpg",
-        "save": True,
+        "image_data": image_path,
         "output_dir": output_dir,
-        "verbose": True,
     }
 
     # 5. Run the Pipeline
     logger.info("Starting classification pipeline...")
     try:
-        results: list[dict[str, Any]] = pipe.run(inference_data)
+        context: dict[str, Any] = pipe.run(inference_data)
+        results: list[dict[str, Any]] = context.get("results", [])
 
         for idx, result in enumerate(results):
             logger.info(f"Result {idx}: {result['model_results']}")
-            if "output_path" in result:
-                logger.info(f"Visualization saved at: {result['output_path']}")
 
     except Exception as e:
         logger.error(f"Pipeline execution failed: {e}")
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="YOLO image classification with Eigen-CAM visualization (wpipe)."
+    )
+    parser.add_argument(
+        "--model", required=True, help="Path to YOLO classification weights file (.pt)"
+    )
+    parser.add_argument("--image", required=True, help="Path to the input image")
+    parser.add_argument(
+        "--output-dir",
+        default="./output/classification",
+        help="Directory to save the visualization",
+    )
+    parser.add_argument(
+        "--device", default="cpu", help="Compute device: 'cpu' or a GPU index like '0'"
+    )
+    parser.add_argument(
+        "--conf", type=float, default=0.25, help="Confidence threshold (default: 0.25)"
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    run_classification_example()
+    args = _parse_args()
+    run_classification_example(
+        args.model, args.image, args.output_dir, args.device, args.conf
+    )
