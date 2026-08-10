@@ -1,6 +1,5 @@
-from .states.eCam_yolo import ECAMConfig, ImageECamYOLO
-<<<<<<< HEAD:module/ecam_yolo/__init__.py
-=======
+"""ECAM-YOLO vision plugin: YOLO inference with Eigen-CAM visualization."""
 
->>>>>>> 6614e99996ef03d5ecc37ee9d9c4983bbdb0146c:src/wpipe_plugins/vision/ecam_yolo/__init__.py
+from .states.ecam_yolo import ECAMConfig, ImageECamYOLO
+
 __all__ = ["ECAMConfig", "ImageECamYOLO"]
