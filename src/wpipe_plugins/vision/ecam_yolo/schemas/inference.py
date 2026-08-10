@@ -1,8 +1,8 @@
 """Data Transfer Objects (DTOs) for inference data validation."""
 
 import uuid
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 import torch
@@ -28,6 +28,7 @@ class InferenceObj(BaseModel):
         str | Path | int | Image.Image | list | tuple | np.ndarray | torch.Tensor
     ) = None
     image_name: str = Field(default_factory=lambda: f"{uuid.uuid4()}.png")
+    model_path: str | None = None
     save: bool = True
     output_dir: str = "./output"
     reshape_transform: Callable = None
