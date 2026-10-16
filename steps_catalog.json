@@ -6,7 +6,7 @@
     "version": "0.1.2",
     "description": "YOLO integration with Eigen-CAM for heatmap visualization in detection, classification, and segmentation tasks.",
     "license": "MIT",
-    "repo": "Community",
+    "repo": "Plugin",
     "author": "Ernesto Fernandez",
     "category": "vision",
     "subcategory1": "ecam_yolo",
@@ -14,5 +14,21 @@
     "environment": "Compatible with Linux, Windows and macOS. GPU (NVIDIA) recommended for optimal performance.",
     "requirements": "src/wpipe_plugins/vision/ecam_yolo/requirements.txt",
     "how_to_use": "from wpipe_plugins.vision.ecam_yolo import ImageECamYOLO, ECAMConfig"
+  },
+  {
+    "name": "rss_parser",
+    "func_name": "RSSParserStep",
+    "namespace": "wpipe_plugins.connectivity.rss",
+    "version": "0.1.0",
+    "description": "Parse RSS/Atom feeds and extract items into pipeline context.",
+    "license": "MIT",
+    "repo": "Plugin",
+    "author": "Community",
+    "category": "connectivity",
+    "subcategory1": "rss",
+    "examples": "src/wpipe_plugins/connectivity/rss/examples/",
+    "environment": "Compatible with Linux, Windows and macOS.",
+    "requirements": "src/wpipe_plugins/connectivity/rss/requirements.txt",
+    "how_to_use": "from wpipe_plugins.connectivity.rss import RSSParserStep"
   }
 ]
