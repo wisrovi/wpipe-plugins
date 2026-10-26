@@ -96,7 +96,15 @@ class FakeEigenCAM:
         """Accept any Grad-CAM constructor arguments."""
         pass
 
-    def __call__(self, x):
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit."""
+        pass
+
+    def __call__(self, x, targets=None):
         """Return a constant centered heatmap matching the input shape."""
         h, w = x.shape[2], x.shape[3]
         cam = np.zeros((h, w), np.float32)
