@@ -17,7 +17,9 @@ class _ColorPalette:
     """
 
     def __init__(self) -> None:
-        self._colors: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(np.uint8)
+        self._colors: np.ndarray = np.random.uniform(0, 255, size=(80, 3)).astype(
+            np.uint8
+        )
 
     def get(self, cls: int) -> list[int]:
         """Return the RGB color for a class index, expanding the palette if needed.
@@ -31,7 +33,9 @@ class _ColorPalette:
         if cls >= len(self._colors):
             new_size = cls + 20
             np.random.seed(42)  # Re-seed to ensure the first 80 remain identical
-            self._colors = np.random.uniform(0, 255, size=(new_size, 3)).astype(np.uint8)
+            self._colors = np.random.uniform(0, 255, size=(new_size, 3)).astype(
+                np.uint8
+            )
 
         return self._colors[cls].tolist()
 
@@ -56,6 +60,7 @@ def get_color(cls: int) -> list[int]:
 
 def parse_detections(
     results: list[Results],
+    conf_threshold: float = 0.0,
 ) -> tuple[list[np.ndarray], list[list[int]], list[str]]:
     """Extract detection data from an Ultralytics Results object.
 
@@ -65,6 +70,8 @@ def parse_detections(
     Args:
         results (List[Results]): Ultralytics inference results object containing
             detection outputs.
+        conf_threshold (float): Minimum confidence threshold for detections.
+            Defaults to 0.0 (preserving predictions already filtered by model).
 
     Returns:
         Tuple[List[np.ndarray], List[List[int]], List[str]]: A tuple containing:
@@ -81,7 +88,7 @@ def parse_detections(
     if res.boxes:
         for box in res.boxes:
             conf = float(box.conf[0])
-            if conf < 0.2:
+            if conf < conf_threshold:
                 continue
             coords = box.xyxy[0].cpu().numpy().astype(int)
             cls = int(box.cls[0])
@@ -269,11 +276,14 @@ def process_classification_cam(
 
 def parse_segmentation(
     results: list[Results],
+    conf_threshold: float = 0.0,
 ) -> tuple[list[np.ndarray], list[np.ndarray], list[list[int]], list[str]]:
     """Extract segmentation masks and bounding box data from Ultralytics Results.
 
     Args:
         results (List[Results]): Ultralytics inference results object.
+        conf_threshold (float): Minimum confidence threshold for segmentations.
+            Defaults to 0.0 (preserving predictions already filtered by model).
 
     Returns:
         Tuple[List[np.ndarray], List[np.ndarray], List[List[int]], List[str]]: A tuple containing:
@@ -291,7 +301,7 @@ def parse_segmentation(
     if res.masks is not None and res.boxes is not None:
         for box, mask_xy in zip(res.boxes, res.masks.xy, strict=True):
             conf = float(box.conf[0])
-            if conf < 0.2:
+            if conf < conf_threshold:
                 continue
             coords = box.xyxy[0].cpu().numpy().astype(int)
             cls = int(box.cls[0])
@@ -312,7 +322,7 @@ def process_segmentation_cam(
     image_float_np: np.ndarray,
     grayscale_cam: np.ndarray,
 ) -> np.ndarray:
-    """Blends full-screen CAM heatmap overlayed with translucent segmentation masks.
+    """Blends full-screen CAM heatmap overlaid with translucent segmentation masks.
 
     Args:
         boxes (List[np.ndarray]): List of bounding boxes.
