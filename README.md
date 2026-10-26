@@ -91,18 +91,32 @@ Contributions are welcome! Please follow these steps to contribute:
 
 ---
 
+## 🛠️ Relevant Technologies and Libraries
+
+This component relies on the following key technologies and libraries across the ecosystem:
+
+- **[WPipe](https://github.com/wisrovi/wpipe)** (`>=2.4.0`): Core execution and forensic pipeline orchestration engine.
+- **[Ultralytics YOLO](https://github.com/ultralytics/ultralytics)** (`>=8.4.67`): Deep learning computer vision models for detection, segmentation, and classification.
+- **[PyTorch-Grad-CAM / grad-cam](https://github.com/jacobgil/pytorch-grad-cam)** (`>=1.5.5`): Explainable AI visual heatmap attribution (Eigen-CAM / Grad-CAM).
+- **[PyTorch](https://pytorch.org/) & [Torchvision](https://pytorch.org/vision/)**: Tensor computations, neural network hooks, and GPU acceleration.
+- **[OpenCV (opencv-python)](https://opencv.org/)**: High-performance image processing, heatmap colormaps, and bounding box drawing.
+- **[Pydantic](https://docs.pydantic.dev/)** (`>=2.10.0`): Strict runtime data validation and contract enforcement.
+- **[Loguru](https://github.com/Delgan/loguru)**: Structured logging and forensic auditing.
+
+---
+
 ## 📄 License
 
 MIT License
 
 ---
 
-## 👤 Autor & Afiliación Oficial
+## 👤 Author & Official Affiliation
 
 * **William Steve Rodriguez Villamizar (Wisrovi)**
-* **Cargo:** Principal AI Engineer & Applied AI Solutions Architect | Scientific Researcher
+* **Role:** Principal AI Engineer & Applied AI Solutions Architect | Scientific Researcher
 * 📧 **Email:** [wisrovi.rodriguez@gmail.com](mailto:wisrovi.rodriguez@gmail.com)
-* 🌐 **Portal Oficial:** [wisrovi.dev](https://wisrovi.dev)
+* 🌐 **Official Portal:** [wisrovi.dev](https://wisrovi.dev)
 * 💼 **LinkedIn:** [wisrovi-rodriguez](https://www.linkedin.com/in/wisrovi-rodriguez/)
 * 🆔 **ORCID:** [0009-0005-0710-1861](https://orcid.org/0009-0005-0710-1861)
 * 📦 **PyPI:** [pypi.org/user/wisrovi/](https://pypi.org/user/wisrovi/)
