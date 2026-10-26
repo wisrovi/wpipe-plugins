@@ -203,8 +203,21 @@ class ImageECamYOLO:
             logger.warning(
                 f"Dynamic layer discovery auditing failed, executing emergency fallback: {e}"
             )
-            # Global structural safety fallback (safest node layout for mainstream PyTorch wrappers)
-            return [self.yolo_model.model.model[-2]]
+            if hasattr(self.yolo_model.model, "model") and hasattr(
+                self.yolo_model.model.model, "__getitem__"
+            ):
+                try:
+                    return [self.yolo_model.model.model[-2]]
+                except Exception:
+                    pass
+            all_convs = [
+                m for m in self.yolo_model.model.modules() if isinstance(m, nn.Conv2d)
+            ]
+            if all_convs:
+                return [all_convs[-1]]
+            raise RuntimeError(
+                f"No mathematically viable deep layers identified inside the architecture: {e}"
+            ) from e
 
     def _process_task(
         self, results: Any, img_float: np.ndarray, grayscale_cam: np.ndarray
@@ -247,7 +260,11 @@ class ImageECamYOLO:
             if results[0].masks is None or len(results[0].boxes) == 0:
                 return img_float, {"model_results": [{"status": "no_detections_found"}]}
 
-            boxes, masks_xy, colors, names = parse_segmentation(results)
+            boxes, masks_xy, colors, names = parse_segmentation(
+                results, conf_threshold=self.config.confidence_threshold
+            )
+            if not boxes:
+                return img_float, {"model_results": [{"status": "no_detections_found"}]}
 
             final_img = process_segmentation_cam(
                 boxes, masks_xy, colors, names, img_float, grayscale_cam
@@ -262,7 +279,9 @@ class ImageECamYOLO:
                         "points_count": len(m),
                         "status": "ok",
                     }
-                    for i, (b, m, n) in enumerate(zip(boxes, masks_xy, names, strict=True))
+                    for i, (b, m, n) in enumerate(
+                        zip(boxes, masks_xy, names, strict=True)
+                    )
                 ]
             }
 
@@ -270,7 +289,11 @@ class ImageECamYOLO:
         if results[0].boxes is None or len(results[0].boxes) == 0:
             return img_float, {"model_results": [{"status": "no_detections_found"}]}
 
-        boxes, colors, names = parse_detections(results)
+        boxes, colors, names = parse_detections(
+            results, conf_threshold=self.config.confidence_threshold
+        )
+        if not boxes:
+            return img_float, {"model_results": [{"status": "no_detections_found"}]}
 
         final_img = renormalize_cam_in_bounding_boxes(
             boxes, colors, names, img_float, grayscale_cam
@@ -333,9 +356,11 @@ class ImageECamYOLO:
         device_param = next(self.yolo_model.model.parameters()).device
         img_tensor = img_tensor.to(device_param)
 
-        cam = EigenCAM(model=wrapped_model, target_layers=target_layers)
-        h, w = orig_rgb.shape[:2]
-        return cv2.resize(cam(img_tensor)[0, :, :], (w, h))
+        with EigenCAM(model=wrapped_model, target_layers=target_layers) as cam:
+            cam_out = cam(img_tensor, targets=None)
+            h, w = orig_rgb.shape[:2]
+            grayscale = np.nan_to_num(cam_out[0, :, :], nan=0.0)
+            return cv2.resize(grayscale, (w, h))
 
     def _process_result(
         self, result: Any, image_info: InferenceObj, verbose: bool
@@ -363,21 +388,18 @@ class ImageECamYOLO:
 
         if verbose:
             logger.info(f"CAM shape: {grayscale_cam.shape}")
-            logger.info(
-                f"CAM min/max: {grayscale_cam.min()} / {grayscale_cam.max()}"
-            )
+            logger.info(f"CAM min/max: {grayscale_cam.min()} / {grayscale_cam.max()}")
 
         # Execute the workflow depending on the task type.
         final_img, output_results = self._process_task(
             [result], img_float, grayscale_cam
         )
 
-        result_path_str = result.path if result.path is not None else image_info.image_name
+        result_path_str = (
+            result.path if result.path is not None else image_info.image_name
+        )
         output_path = Path(image_info.output_dir) / Path(result_path_str).name
-        if (
-            getattr(image_info, "save", True)
-            or image_info.output_dir != "./output"
-        ):
+        if getattr(image_info, "save", True) or image_info.output_dir != "./output":
             output_results = self._save_visualization(
                 final_img, output_path, output_results
             )
