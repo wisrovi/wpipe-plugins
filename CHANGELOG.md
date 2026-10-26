@@ -4,6 +4,20 @@ All notable changes to WPipe will be documented in this file.
 
 ---
 
+## [wpipe-plugins 0.1.3] - 2026-10-26
+
+### Fixed
+- Fixed `BaseCAM.__call__() missing 1 required positional argument: 'targets'` by explicitly passing `targets=None` to `cam(...)`. Compatible with `grad-cam>=1.5.5` and `grad-cam==1.5.7+`.
+- Wrapped `EigenCAM` computation in context manager `with EigenCAM(...) as cam:` to automatically release PyTorch forward hooks upon completion, avoiding memory leaks and hook accumulation across multiple image iterations.
+- Fixed hardcoded `conf < 0.2` filtering in `parse_detections` and `parse_segmentation`, now accepting `conf_threshold` and respecting dynamic user-defined thresholds (e.g. 0.10).
+- Added resilient fallback in `_get_target_layers` for non-sequential or custom model architectures.
+- Updated `FakeEigenCAM` test fixture with context manager protocol and `targets=None` support.
+
+### Changed
+- Package version bumped to 0.1.3 (patch release).
+
+---
+
 ## [wpipe-plugins 0.1.2] - 2026-08-10
 
 ### Fixed
